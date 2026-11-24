@@ -44,6 +44,14 @@ if (typeof url !== 'string' || url.length === 0) {
   fail('POST.json must hold a non-empty string `url`');
 }
 
+// The gate reads the post from X itself, so the URL must point at a real
+// X status — anything else (a homepage, a profile, another site) is not
+// an entry and must fail loudly here instead of reaching the gate.
+const statusUrl = /^https:\/\/(?:x\.com|twitter\.com)\/[A-Za-z0-9_]{1,15}\/status\/\d+$/;
+if (!statusUrl.test(url)) {
+  fail(`POST.json \`url\` must be an X status URL, e.g. https://x.com/<handle>/status/<id> (got: ${url})`);
+}
+
 if (text.length > 16384) {
   fail(`POST.json is ${text.length} bytes, over the gate's 16384-byte cap`);
 }
